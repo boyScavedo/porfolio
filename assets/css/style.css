@@ -372,10 +372,10 @@ section .title::after{
     width: 80%;
 }
 .skills-content .right .php::before{
-    width: 50%;
+    width: 60%;
 }
 .skills-content .right .mysql::before{
-    width: 70%;
+    width: 40%;
 }
 
 /* teams section styling */
