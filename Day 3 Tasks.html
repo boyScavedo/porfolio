@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic To-Do List | HTML/CSS/JS</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-[#1e1e1e]">
+    
+    <h1 class="text-center text-[4vw] font-bold text-[#007acc]">TO-DO LIST</h1>
+    <h2 class="mx-5 text-white">// Global Typing is Enabled - Start Typing to Add Tasks</h2>
+    <h2 class="mx-5 text-white">// Press enter after writing task to save it</h2>
+    
+
+    <div class="flex flex-col md:flex-row justify-center gap-4">
+        <input type="text" class="text-white" id="task-name" placeholder="Enter your task...">
+        <button class="bg-[#007acc] px-[1vw] py-[1vh] font-bold text-white rounded-md hover:bg-[#0069cc] transition duration-300 ease-in-out" onclick="addTask()">Add Task</button>
+    </div>
+    <div class="flex flex-col gap-4 m-10">
+        <div class="bg-white shadow-sm rounded-xl border border-slate-200 p-6">
+            <table class="table-fixed w-full text-center" id="ongoing-tasks">
+                <thead>
+                    <tr>
+                        <th>S. No.</th>
+                        <th>Task Name</th>
+                        <th>Completion</th>
+                        <th>Creation Date</th>
+                        <th>Completion Date</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="bg-white shadow-sm rounded-xl border border-slate-200 p-6">
+            <table class="table-fixed w-full text-center" id="completed-tasks">
+                <thead>
+                    <tr>
+                        <th>S. No.</th>
+                        <th>Task Name</th>
+                        <th>Completion</th>
+                        <th>Completion Date</th>
+                        <th>Creation Date</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="bg-white shadow-sm rounded-xl border border-slate-200 p-6">
+            <table class="table-fixed w-full text-center" id="deleted-tasks">
+                <thead>
+                    <tr>
+                        <th>S. No.</th>
+                        <th>Task Name</th>
+                        <th>Completion</th>
+                        <th>Completion Date</th>
+                        <th>Creation Date</th>
+                        <th>Restore</th>
+                        <th>Permanent Delete</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    
+    
+    <script>
+        var checkboxes = document.querySelectorAll('[name="Completion"]');
+
+        window.addEventListener('keydown', (event) => {
+            const taskInput = document.getElementById('task-name');
+
+            if(document.activeElement === taskInput) {return;}
+            if(event.key.length > 1) return;
+
+            taskInput.focus();
+        })
+        
+        document.getElementById('task-name').addEventListener('keydown', (event) => {
+            if (event.key === "Enter") {
+                addTask();
+            } 
+        })
+
+        document.addEventListener('change', (event) => {
+            if (event.target.name == 'Completion') {
+                const row = event.target.closest('tr');
+
+                if (event.target.checked) {
+                    moveToCompleted(row);
+                }
+                else {
+                    moveToOngoing(row);
+                }
+            }
+        })
+
+        function addTask(){
+            const table = document.getElementById('ongoing-tasks').getElementsByTagName('tbody')[0];
+
+            const lastRow = table.lastElementChild;
+
+            var lastSerialNumber;
+            lastSerialNumber = 0;
+            if(lastRow) {
+                lastSerialNumber = parseInt(lastRow.cells[0].innerHTML);
+            }
+
+            var userTaskName = document.getElementById('task-name').value;
+
+            const newRow = table.insertRow();
+            const serialNumberCell = newRow.insertCell(0);
+            const taskNameCell = newRow.insertCell(1);
+            const completionCell = newRow.insertCell(2);
+            const creationDateCell = newRow.insertCell(3);
+            const completionDateCell = newRow.insertCell(4);
+            const deleteCell = newRow.insertCell(5);
+
+            const checkboxCode = `<input type="checkbox" name="Completion" value="Completed">`;
+
+            const now = new Date();
+            var hour = now.getHours() % 12 || 12;
+            var minute = now.getMinutes();
+            var dayHalf = (now.getHours() >= 12) ? 'PM' : 'AM';
+            var month = now.getMonth() + 1;
+            var day = now.getDate();
+            var year = now.getFullYear();
+            var creationDate = String(hour).padStart(2, '0') + ":" + String(minute).padStart(2, '0') + ' ' + dayHalf + " | " + String(month).padStart(2, '0') + "/" + String(day).padStart(2, '0') + "/" + year;
+
+            const deleteButton = `<button onclick="deleteTask(this)">Delete</button>`;
+
+            serialNumberCell.innerHTML = ++lastSerialNumber;
+            taskNameCell.innerHTML = userTaskName;
+            completionCell.innerHTML = checkboxCode;
+            creationDateCell.innerHTML = creationDate;
+            deleteCell.innerHTML = deleteButton;
+
+            document.getElementById('task-name').value = '';
+        }
+
+        function moveToCompleted(taskRow) {
+            const table = document.getElementById('completed-tasks').getElementsByTagName('tbody')[0];
+
+            const lastRow = table.lastElementChild;
+            var lastSerialNumber;
+
+            lastSerialNumber = 0;
+            if(lastRow) {
+                lastSerialNumber = parseInt(lastRow.cells[0].innerHTML);
+            }
+
+            const now = new Date();
+            var hour = now.getHours() % 12 || 12;
+            var minute = now.getMinutes();
+            var dayHalf = (now.getHours() >= 12) ? 'PM' : 'AM';
+            var month = now.getMonth() + 1;
+            var day = now.getDate();
+            var year = now.getFullYear();
+            var completionDate = String(hour).padStart(2, '0') + ":" + String(minute).padStart(2, '0') + ' ' + dayHalf + " | " + String(month).padStart(2, '0') + "/" + String(day).padStart(2, '0') + "/" + year;
+
+            taskRow.cells[0].innerHTML = ++lastSerialNumber;
+
+            var temp = taskRow.cells[3].innerHTML;
+            taskRow.cells[4].innerHTML = temp;
+            taskRow.cells[3].innerHTML = completionDate;
+
+            const taskBody = taskRow.closest('tbody');
+            table.appendChild(taskRow);
+            updateSerialNumber(taskBody);
+        }
+
+        function moveToOngoing(taskRow) {
+            const table = document.getElementById('ongoing-tasks').getElementsByTagName('tbody')[0];
+
+            const lastRow = table.lastElementChild;
+            var lastSerialNumber;
+
+            lastSerialNumber = 0;
+            if(lastRow) {
+                lastSerialNumber = parseInt(lastRow.cells[0].innerHTML);
+            }
+
+            taskRow.cells[0].innerHTML = ++lastSerialNumber;
+
+            taskRow.cells[3].innerHTML = taskRow.cells[4].innerHTML;
+            taskRow.cells[4].innerHTML = ''; 
+
+            const taskBody = taskRow.closest('tbody');
+            table.appendChild(taskRow);
+            updateSerialNumber(taskBody);
+        }
+
+        function deleteTask(task) {
+            const table = document.getElementById('deleted-tasks').getElementsByTagName('tbody')[0];
+            const lastRow = table.lastElementChild;
+            const restoreButton = `<button onclick="restoreTask(this)">Restore</button>`;
+
+            var lastSerialNumber;
+
+            lastSerialNumber = 0;
+            if(lastRow) {
+                lastSerialNumber = parseInt(lastRow.cells[0].innerHTML);
+            }
+
+            const taskRow = task.closest('tr');
+            const taskBody = task.closest('tbody');
+
+            taskRow.cells[0].innerHTML = ++lastSerialNumber;
+            taskRow.deleteCell(5);
+            const restoreCell = taskRow.insertCell(5);
+
+            const permanentDeleteCell = taskRow.insertCell(6);
+            permanentDeleteCell.innerHTML = `<button onclick="permanentDeleteTask(this)">Delete</button>`;
+
+            restoreCell.innerHTML = restoreButton;
+            taskRow.querySelector('[name="Completion"]').disabled = true;
+
+            table.appendChild(taskRow);
+            updateSerialNumber(taskBody);
+
+        }
+
+        function restoreTask(task) {
+            var table;
+            const taskRow = task.closest('tr');
+            const taskBody = taskRow.closest('tbody');
+
+            if(taskRow.querySelector('[name="Completion"]').checked) {
+                table = document.getElementById('completed-tasks').getElementsByTagName('tbody')[0];
+            }
+            else {
+                table = document.getElementById('ongoing-tasks').getElementsByTagName('tbody')[0];
+            }
+
+            const lastRow = table.lastElementChild;
+
+            var lastSerialNumber;
+
+            lastSerialNumber = 0;
+            if(lastRow) {
+                lastSerialNumber = parseInt(lastRow.cells[0].innerHTML);
+            }
+
+            taskRow.cells[0].innerHTML = ++lastSerialNumber;
+
+            taskRow.querySelector('[name="Completion"]').disabled = false;
+
+            taskRow.deleteCell(6);
+            taskRow.deleteCell(5);
+
+            const deleteCell = taskRow.insertCell();
+            deleteCell.innerHTML = `<button onclick="deleteTask(this)">Delete</button>`
+    
+            table.appendChild(taskRow);
+            updateSerialNumber(taskBody);
+        }
+
+        function permanentDeleteTask(task) {
+
+            if(!confirm("Are you sure you want to delete this task forever?")){return;}
+
+            const tableRow = task.closest('tr');
+
+            const tableBody = tableRow.closest('tbody');
+            tableRow.remove();
+
+            updateSerialNumber(tableBody);
+        }
+
+        function updateSerialNumber(tableBody) {
+            const tableRows = tableBody.rows;
+            for(let i = 0; i < tableRows.length; i++) {
+                tableRows[i].cells[0].innerHTML = i + 1;
+            }
+        }
+
+    </script>
+</body>
+</html>
